@@ -1,0 +1,113 @@
+openapi: 3.0.3
+
+info:
+  version: v1.0
+  title: One-time-link
+
+servers:
+  - url: 'http://localhost:4040'
+
+paths:
+  /api/health:
+    get:
+      summary: 'Health check request'
+      tags:
+        - health
+      responses:
+        200:
+          description: 'Success, it works!'
+          $ref: '#/components/responses/SuccessResponse'
+  /api/links:
+    post:
+      summary: 'Create one-time-use link'
+      tags:
+        - links
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                value:
+                  type: string
+                  example: 'NEW_EXAMPLE_STRING'
+      responses:
+        200:
+          description: 'This endpoint allows you to create a unique, one-time-use link based on a provided value. If the value has already been used to create a link, the request will be rejected'
+          $ref: '#/components/responses/LinkResponse'
+        400:
+          $ref: '#/components/responses/BadRequestError'
+  /api/links/{id}:
+    get:
+      summary: 'Retrieve the details of a one-time-use link'
+      security: []
+      tags:
+        - links
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      responses:
+        200:
+          description: 'This endpoint retrieves the details of a one-time-use link by its unique identifier. The link can only be retrieved if it is still active. If the link has already been used, an error will be returned.'
+          $ref: '#/components/responses/LinkValueResponse'
+        400:
+          $ref: '#/components/responses/BadRequestError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+components:
+  responses:
+    LinkResponse:
+      description: 'Should return one-time-use link'
+      content:
+        application/json:
+          schema:
+            type: string
+            example: 'http://localhost:4040/api/links/1e2081db-af43-454d-bf69-dbfaaeb4dc4f'
+    LinkValueResponse:
+      description: 'Should return value of one-time-use link'
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              value:
+                type: string
+                example: 'NEW_EXAMPLE_STRING'
+    BadRequestError:
+      description: 'Bad request error, happens when some request body or query field is missing or invalid'
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: missing_required_field:email
+    NotFoundError:
+      description: 'Occurs when some entity can not be found. Entity is usually specified in error message'
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: 'User not found'
+    SuccessResponse:
+      description: 'Success response'
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              ok:
+                type: boolean
+                example: true
+  parameters:
+    idParam:
+      name: id
+      in: path
+      description: 'id of entity'
+      required: true
+      schema:
+        type: string
+        format: uuid
+        example: '1e2081db-af43-454d-bf69-dbfaaeb4dc4f'

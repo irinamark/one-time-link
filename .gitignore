@@ -1,0 +1,13 @@
+# IDE / Editor
+.idea
+# dependency directories
+node_modules/
+
+# tmp directory
+tmp
+
+# environment file
+.env
+
+# babel
+dist

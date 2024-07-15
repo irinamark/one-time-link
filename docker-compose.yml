@@ -1,0 +1,33 @@
+version: "3"
+
+services:
+  db:
+    image: postgres:12
+    container_name: "one_time_link_postgres"
+    env_file: ".env"
+    volumes:
+      - "./tmp:/var/lib/postgresql/data"
+    ports:
+      - "${PGPORT}:5432"
+    networks:
+      - one-time-link
+
+  rest:
+    build: .
+    image: one-time-link-api
+#    command: npm start
+    restart: always
+    depends_on:
+      - db
+    env_file: ".env"
+    ports:
+      - "${PORT}:4040"
+    networks:
+      - one-time-link
+
+volumes:
+  one-time-link:
+
+networks:
+  one-time-link:
+
